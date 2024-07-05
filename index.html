@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Your Profile Picture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        h1 {
+            color: #1e90ff;
+        }
+        #uploadedImage {
+            display: none;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+        #response {
+            margin-top: 20px;
+            color: #1e90ff;
+        }
+        input[type="file"],
+        input[type="submit"] {
+            background-color: #1e90ff;
+            color: #121212;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        input[type="submit"]:hover {
+            background-color: #104e8b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload Your Profile Picture</h1>
+    <form id="uploadForm" enctype="multipart/form-data" method="post">
+        <input type="file" name="file" id="file" accept="image/*" />
+        <input type="submit" value="Upload Image" />
+    </form>
+    <p id="response">No file uploaded yet.</p>
+    <img id="uploadedImage" src="" alt="Uploaded Image" />
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('response').innerText = 'File uploaded successfully.';
+                    document.getElementById('uploadedImage').src = data.imageUrl;
+                    document.getElementById('uploadedImage').style.display = 'block';
+                } else {
+                    document.getElementById('response').innerText = 'Failed to upload file.';
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                document.getElementById('response').innerText = 'Error uploading file.';
+            });
+        };
+    </script>
+</body>
+</html>
